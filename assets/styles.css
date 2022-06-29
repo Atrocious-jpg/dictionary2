@@ -54,7 +54,7 @@ body {
   font-weight: 700;
 }
 .wrapper.active ul {
-  height: 303px;
+  height: 330px;
   opacity: 1;
 }
 .wrapper.active .info-text {
@@ -143,6 +143,7 @@ ul li:last-child {
 .synonym .details .list {
   display: flex;
   flex-wrap: wrap;
+  height: 30px;
 }
 .synonym .details .list span {
   background: none;
