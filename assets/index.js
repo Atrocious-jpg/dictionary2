@@ -10,45 +10,7 @@ const wrapper = document.querySelector(".wrapper"),
   infoText = wrapper.querySelector(".info-text");
 let audio;
 
-
-function checkErr(err){
-    if((typeof err === 'undefined') || (err == "")){
-       return false; 
-    }
-    else{
-        return true;
-    }
-}
-
-//Interpretation of the data
-function output(res, word){
-  
-  if(!res.title){
-    wrapper.classList.add("active");
-    //console.log(JSON.stringify(res))
-    
-    var phonet = res[0].meanings[0];
-    var exampless = res[0].meanings[0].definitions[0].example;
-    var synonymss = phonet
-    //console.log(JSON.stringify(res[0]))
-    var adio;
-    try{
-        adio = (checkErr(res[0].phonetics[0].audio) ? res[0].phonetics[0].audio : res[0].phonetics[1].audio)
-    }catch(e){
-        adio = "";
-    } 
-        
-    var audioFile = adio;
-    
-   
-    volume.onclick = () => {
-        var playPromise = new Audio(audioFile).play(); 
-       
-if (playPromise !== undefined) {
-  playPromise.then(function() {
-  
-    
-  }).catch(function(error) {
+function errorMessage(mess){
     toastr.options = {
   "closeButton": false,
   "debug": false,
@@ -66,15 +28,65 @@ if (playPromise !== undefined) {
   "showMethod": "fadeIn",
   "hideMethod": "fadeOut"
 }
-toastr["warning"]("No audio found");
-  });
-}       
-        } 
+  toastr["warning"](`${mess}`);
+}
+function checkErr(err){
+    if((typeof err === 'undefined') || (err == "")){
+       return false; 
+    }
+    else{
+        return true;
+    }
+}
+removeIcon.onclick = () =>{
+    searchInput.value = ""
+    wrapper.classList.remove("active")
+    infoText.innerHTML = "Type any existing word and press enter to get meaning, example,synonyms, etc."
+}
+
+//Interpretation of the data
+function output(res, word){
+  
+  if(!res.title){
+    wrapper.classList.add("active");
+    //console.log(JSON.stringify(res))
+    
+    var phonet = res[0].meanings[0];
+    var exampless = res[0].meanings[0].definitions[0].example;
+    var synonymss = phonet
+    //console.log(JSON.stringify(res[0]))
+    var textPart;
+    var adio;
+    try{
+        adio = (checkErr(res[0].phonetics[0].audio) ? res[0].phonetics[0].audio : res[0].phonetics[1].audio)
+    }catch(e){
+        adio = "";
+    }
+    try{
+        textPart = `${res[0].phonetic ? res[0].phonetic : res[0].phonetics[getLen(res[0].phonetics)-1].text}`
+    }catch(erro){
+        textPart = "No pronunciation found"
+    }
+        
+    var audioFile = adio;
+    
+   
+    volume.onclick = () => {
+        var playPromise = new Audio(audioFile).play(); 
+       
+if (playPromise !== undefined) {
+  playPromise.then(function() {
+  
+    
+  }).catch(function(error) {
+    errorMessage("No audio Found")
+});    
+        }} 
     
      
     //console.log(JSON.stringify(res[0].phonetics[1]))
     wordToBeSearched.textContent = word;
-    pronounciation.innerHTML = `${res[0].meanings[0].partOfSpeech}</br>${res[0].phonetic ? res[0].phonetic : res[0].phonetics[getLen(res[0].phonetics)-1].text}`; 
+    pronounciation.innerHTML = `${res[0].meanings[0].partOfSpeech}</br>${textPart}`; 
     meaning.innerHTML = `${phonet.definitions[0].definition}</br>`;
     example.innerHTML = `${exampless ? exampless : "No example found"}`;
    //console.log(res[0].phonetics[1].audio) 
@@ -133,7 +145,7 @@ function fetchApi(word) {
   output(result, word);
    }).catch((err) =>{
         wrapper.classList.remove("active");
-        infoText.innerHTML = `Can’t find the meaning of <span>"${word}"</span>. Please, try to search for another word.</br>${err}`;
+        infoText.innerHTML = `Can’t find the meaning of <span>"${word}"</span>. Please, try to search for another word.</br>`;
         //console.log(err)
 
     });
