@@ -4,7 +4,7 @@ const wrapper = document.querySelector(".wrapper"),
     pronounciation = wrapper.querySelector(".word .details span"),
       meaning = wrapper.querySelector(".meaning .details span"),
       example = wrapper.querySelector(".example .details span"),
-  synonyms = wrapper.querySelector(".synonym .details span"),
+  synonyms = wrapper.querySelector(".synonym .details .list"),
   volume = wrapper.querySelector(".word i"),
   removeIcon = wrapper.querySelector(".search span"),
   infoText = wrapper.querySelector(".info-text");
@@ -15,49 +15,58 @@ function output(res, word){
   
   if(!res.title){
     wrapper.classList.add("active");
-    var audioFile = res[0].phonetics[0].audio
+    //console.log(JSON.stringify(res))
+    
     var phonet = res[0].meanings[0];
     var exampless = res[0].meanings[0].definitions[0].example;
-    var synonymss = phonet.definitions[0]
-    volume.onclick = () => {
-        audio = new Audio(audioFile);
-        audio.play();
-    }
+    var synonymss = phonet
+    var audioFile = res[0].phonetics[1].audio
+    
      
-    //console.log(JSON.stringify(res))
+    //console.log(JSON.stringify(res[0].phonetics[1]))
     wordToBeSearched.textContent = word;
-    pronounciation.innerHTML = `${res[0].meanings[0].partOfSpeech}</br>${res[0].phonetics[getLen(res[0].phonetics)-1].text}`; 
+    pronounciation.innerHTML = `${res[0].meanings[0].partOfSpeech}</br>${res[0].phonetics ? res[0].phonetic : res[0].phonetics[0].text}`; 
     meaning.innerHTML = `${phonet.definitions[0].definition}</br>`;
     example.innerHTML = `${exampless ? exampless : "No example found"}`;
+   //console.log(res[0].phonetics[1].audio) 
     
     
-    if(synonymss.synonyms[0] == undefined){
+    if(getLen(synonymss.synonyms) <=0 ){
 
             synonyms.innerHTML = `No synonyms found`;
 
         }else{
 
             synonyms.innerHTML = "";
+          //console.log(JSON.stringify(res))
 
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < getLen(synonymss.synonyms); i++) {
 
-                let tag = `<span onclick="search(‘${synonymss.synonyms[i]}‘)">${synonymss.synonyms[i]},</span>`;
-
-                tag = i == 4 ? tag = `<span onclick="search(‘${synonymss.synonyms[i]}‘)">${synonymss.synonyms[4]}</span>` : tag;
-
-                synonyms.insertAdjacentHTML("beforeend", tag);
+                let tag = `<span onclick="search('${synonymss.synonyms[i]}')"> ${synonymss.synonyms[i]}</span>`;
+               
+              synonyms.insertAdjacentHTML("beforeend", tag);
 
             }
-
+            
+   // var audioFile = adio ? adio : "";
+     
+    
+    volume.onclick = () => {
+        audio = new Audio(audioFile);
+        audio.play();
+        
+        }
+        
         }
     
-    
-   console.log(JSON.stringify(res[0].meanings[0].definitions))
+    //console.log(JSON.stringify(res[0].phonetics[1].audio))
+    //console.log(audioFile)
+   //console.log(JSON.stringify(res[0].meanings[0].definitions))
    
    } 
     else{
         infoText.innerHTML = `Can’t find the meaning of <span>"${word}"</span>. Please, try to search for another word.</br>${res.resolution}`;
-        console.log(JSON.stringify(res))
+        
     }
     
 }
